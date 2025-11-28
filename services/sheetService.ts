@@ -29,10 +29,14 @@ export const getAppSettings = () => {
   const scriptUrl = isHardcoded ? DEFAULT_SCRIPT_URL : (storedUrl || '');
   const sheetUrl = (DEFAULT_SHEET_URL && DEFAULT_SHEET_URL.length > 5) ? DEFAULT_SHEET_URL : (storedSheetUrl || '');
   
+  // If hardcoded, force disable mock to ensure it connects immediately.
+  // Otherwise, fallback to local storage preference, defaulting to Mock (true) if no URL is set.
+  const useMock = isHardcoded ? false : (storedMock !== null ? storedMock === 'true' : (!scriptUrl));
+  
   return {
     scriptUrl,
     sheetUrl,
-    useMock: storedMock !== null ? storedMock === 'true' : (!scriptUrl), // Default to mock if no URL
+    useMock: useMock,
     isHardcoded: isHardcoded
   };
 };
