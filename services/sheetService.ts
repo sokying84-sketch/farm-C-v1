@@ -24,7 +24,7 @@ export const getAppSettings = () => {
   const storedMock = localStorage.getItem(STORAGE_KEY_MOCK);
   
   // Logic: Prioritize hardcoded constants if they are set (length > 5 checks for non-empty)
-  const isHardcoded = (DEFAULT_SCRIPT_URL && DEFAULT_SCRIPT_URL.length > 5);
+  const isHardcoded = (DEFAULT_SCRIPT_URL.length > 5);
   
   const scriptUrl = isHardcoded ? DEFAULT_SCRIPT_URL : (storedUrl || '');
   const sheetUrl = (DEFAULT_SHEET_URL && DEFAULT_SHEET_URL.length > 5) ? DEFAULT_SHEET_URL : (storedSheetUrl || '');
@@ -33,7 +33,7 @@ export const getAppSettings = () => {
     scriptUrl,
     sheetUrl,
     useMock: storedMock !== null ? storedMock === 'true' : (!scriptUrl), // Default to mock if no URL
-    isHardcoded: !!isHardcoded
+    isHardcoded: isHardcoded
   };
 };
 
@@ -214,10 +214,6 @@ export const createBatch = async (
   // AUTO LOG: Raw Material Cost + Receiving Wastage
   const rawRate = getRawMaterialRate();
   const rawCost = rawWeight * rawRate;
-  // Note: We don't double count wastage cost here if it's already part of raw cost paid
-  // But if we want to track 'loss value', we can put it in wastage column. 
-  // Usually Raw Cost = Total Weight * Rate. Wastage is just a metric.
-  // Unless we pay only for Net Weight? Assuming we pay for Total Weight.
   
   recordCostTransaction(newId, rawCost, 0, 0, 0, rawWeight, 0);
 
@@ -351,17 +347,8 @@ export const packBatchPartial = async (
   await updateInventory(stickerId, -packCount);
 
   // AUTO LOG: PACKAGING COST (Batch Specific)
-  // Calculate cost based on inventory unit cost
   const containerItem = mockInventory.find(i => i.id === containerId);
   const labelItem = mockInventory.find(i => i.id === stickerId);
-  
-  // PackSize is typically how many units in a bulk pack, but unitCost is usually per bulk pack
-  // We need Cost Per Unit. 
-  // Assumption: Inventory unitCost is per "unit" defined in inventory (e.g. 'packs').
-  // If unit is 'packs' and packSize is 100, then cost per single pouch is unitCost/packSize.
-  // However, usually simplified: unitCost is cost of 1 decrementable unit.
-  // Let's assume inventory.unitCost is per the unit stored (e.g. per 1 pouch if quantity is count of pouches).
-  // Checking mock data: Pouch unit='packs', packSize=100, Cost=45. So 1 pouch = 0.45.
   
   let containerUnitCost = 0;
   if (containerItem) {
@@ -522,12 +509,6 @@ export const createPurchaseOrder = async (itemId: string, qtyPackages: number, s
     supplier
   };
   mockPurchaseOrders.unshift(newPO);
-  
-  // Log Procurement as a distinct transaction (Expense)
-  // This is optional if we only track COGS, but usually good to track cash flow
-  // We'll mark it as 'Inventory Asset' purchase, but for simplicity in this app, let's keep it separate from batch COGS.
-  // The user asked for "Packaging supply costs auto count how much spend in THIS BATCH", which is covered in packBatchPartial.
-  // This PO function is just for stock replenishment.
 
   return { success: true, data: newPO };
 };
@@ -657,7 +638,7 @@ export const getDailyProductionCosts = async (forceRemote = false): Promise<ApiR
   // Initialize mock data if empty (First Load Simulation - Transactional)
   if (mockDailyCosts.length === 0) {
     const today = new Date();
-    for (let i = 0; i < 7; i++) {
+    for (let i = 7; i >= 0; i--) {
         const d = new Date(today);
         d.setDate(today.getDate() - i);
         const dateStr = d.toISOString().split('T')[0];

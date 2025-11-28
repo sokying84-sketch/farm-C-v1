@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { getFinishedGoods, getInventory, getPurchaseOrders, createPurchaseOrder, receivePurchaseOrder, complaintPurchaseOrder, resolveComplaint, getSuppliers, addSupplier, deleteSupplier, addInventoryItem, getCustomers, addCustomer, createSale, updateSaleStatus, getSales, getDailyProductionCosts, updateDailyCost, getWeeklyRevenue, getLaborRate, setLaborRate, getRawMaterialRate, setRawMaterialRate } from '../services/sheetService';
 import { InventoryItem, PurchaseOrder, Customer, FinishedGood, SalesRecord, DailyCostMetrics, Supplier } from '../types';
@@ -396,7 +395,7 @@ const FinancePage: React.FC = () => {
                     <label className="block text-xs font-bold text-slate-500 mb-1">Product</label>
                     <select className="w-full p-3 border rounded-lg bg-slate-50" value={salesGood} onChange={e => setSalesGood(e.target.value)} required>
                         <option value="">Select Product...</option>
-                        {Object.values(availableGoods).map((g: any) => (
+                        {Object.values(availableGoods).map((g) => (
                             <option key={g.key} value={g.key}>
                                 {g.label} (Stock: {g.totalQty}) - RM {g.price.toFixed(2)}
                             </option>
@@ -831,18 +830,18 @@ const FinancePage: React.FC = () => {
                 </div>
                 <div className="flex space-x-3">
                     <button onClick={() => setShowRateModal(false)} className="flex-1 py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button onClick={handleUpdateRate} className="flex-1 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Save Rate</button>
+                    <button onClick={handleUpdateRate} className="flex-1 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700">Update Rate</button>
                 </div>
             </div>
         </div>
       )}
 
-      {/* MODAL: EDIT RAW RATE */}
+      {/* MODAL: EDIT RAW MATERIAL RATE */}
       {showRawRateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
             <div className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center"><Sprout className="mr-2 text-green-600"/> Edit Raw Material Rate</h3>
-                <p className="text-sm text-slate-500 mb-4">Set the cost per KG for incoming mushrooms.</p>
+                <p className="text-sm text-slate-500 mb-4">Set the cost per KG for raw mushrooms.</p>
                 <label className="block text-xs font-bold text-slate-500 mb-1">Rate per KG (RM)</label>
                 <div className="relative mb-6">
                     <span className="absolute left-3 top-3 text-slate-400 font-bold">RM</span>
@@ -856,28 +855,12 @@ const FinancePage: React.FC = () => {
                 </div>
                 <div className="flex space-x-3">
                     <button onClick={() => setShowRawRateModal(false)} className="flex-1 py-2 text-slate-500 font-bold hover:bg-slate-100 rounded-lg">Cancel</button>
-                    <button onClick={handleUpdateRawRate} className="flex-1 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Save Rate</button>
+                    <button onClick={handleUpdateRawRate} className="flex-1 py-2 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700">Update Rate</button>
                 </div>
             </div>
         </div>
       )}
-      
-      {/* MODAL: ADD CUSTOMER */}
-      {showCustomerModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-              <div className="bg-white p-6 rounded-2xl shadow-xl max-w-sm w-full">
-                  <h3 className="font-bold text-lg mb-4 flex items-center"><User className="mr-2 text-blue-600"/> Add Customer</h3>
-                  <form onSubmit={handleAddCustomer} className="space-y-3">
-                      <input placeholder="Customer Name" className="w-full p-2 border rounded" required value={newCustomer.name} onChange={e => setNewCustomer({...newCustomer, name: e.target.value})} />
-                      <input placeholder="Email" className="w-full p-2 border rounded" required value={newCustomer.email} onChange={e => setNewCustomer({...newCustomer, email: e.target.value})} />
-                      <input placeholder="Phone" className="w-full p-2 border rounded" value={newCustomer.contact} onChange={e => setNewCustomer({...newCustomer, contact: e.target.value})} />
-                      <input placeholder="Address" className="w-full p-2 border rounded" value={newCustomer.address} onChange={e => setNewCustomer({...newCustomer, address: e.target.value})} />
-                      <button type="submit" className="w-full py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 mt-2">Register Customer</button>
-                  </form>
-                  <button onClick={() => setShowCustomerModal(false)} className="mt-3 w-full text-sm text-slate-500">Cancel</button>
-              </div>
-          </div>
-      )}
+
     </div>
   );
 };

@@ -411,9 +411,9 @@ const SettingsPage: React.FC = () => {
               </div>
               
               {isHardcoded && (
-                 <div className="p-3 bg-nature-100 text-nature-800 rounded-lg flex items-center text-sm font-bold border border-nature-300">
+                 <div className="p-3 bg-nature-100 text-nature-800 rounded-lg flex items-center text-sm font-bold border border-nature-300 mb-4">
                     <Lock size={18} className="mr-2" />
-                    URLs are configured permanently in code. Editing is disabled.
+                    URLs are configured permanently in code. Editing is disabled in this dashboard.
                  </div>
               )}
 
